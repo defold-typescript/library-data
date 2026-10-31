@@ -1,0 +1,57 @@
+@defold-typescript/library-types
+=================================
+
+This package vendors TypeScript type declarations derived from the Lua library
+definitions published by the ts-defold/library project:
+
+    https://github.com/ts-defold/library
+    License: MIT
+    Pinned commit: 2fe3aed3352a913d2859e6e85d34a8b23d821368
+
+The declaration forks under each library folder's `fork/` that descend from these
+definitions were produced by codemodding the upstream declarations — Defold
+core types (`vmath.*`, `hash`, `url`, engine handles) are renamed to the
+`@defold-typescript/types` surface; all other content is left byte-identical.
+The original copyright and license notices of the upstream authors are
+retained.
+
+Attributed upstream libraries (by their directory in ts-defold/library):
+
+    - monarch             — Britzl, https://github.com/britzl/monarch
+    - defold-orthographic — Britzl, https://github.com/britzl/defold-orthographic
+    - gooey               — Britzl, https://github.com/britzl/gooey
+    - defold-input        — Britzl, https://github.com/britzl/defold-input
+    - platypus            — Britzl, https://github.com/britzl/platypus
+    - defold-event        — Insality, https://github.com/Insality/defold-event
+    - defold-richtext     — Britzl, https://github.com/britzl/defold-richtext
+    - narrator            — astrochili, https://github.com/astrochili/narrator
+    - defcon              — Britzl, https://github.com/britzl/defcon
+    - defold-lang         — Insality, https://github.com/Insality/defold-lang
+    - defold-saver        — Insality, https://github.com/Insality/defold-saver
+    - defsave             — subsoap, https://github.com/subsoap/defsave
+    - library-defold-persist — whiteboxdev, https://github.com/whiteboxdev/library-defold-persist
+    - defold-proto        — Insality, https://github.com/Insality/defold-proto
+    - defmath             — subsoap, https://github.com/subsoap/defmath
+    - dicebag             — 8bitskull, https://github.com/8bitskull/dicebag
+    - defold-tweener      — Insality, https://github.com/Insality/defold-tweener
+    - squid               — paweljarosz, https://github.com/paweljarosz/squid
+    - defold-log          — Insality, https://github.com/Insality/defold-log
+    - defold-metrics      — Britzl, https://github.com/britzl/defold-metrics
+    - deftest             — Britzl, https://github.com/britzl/deftest
+    - lua-immutable       — paweljarosz, https://github.com/paweljarosz/lua-immutable
+    - nakama-defold       — Heroic Labs, https://github.com/heroiclabs/nakama-defold
+    - defold-yagames      — indiesoftby, https://github.com/indiesoftby/defold-yagames
+    - defold-bridge       — Playgama, https://github.com/Playgama/bridge-defold
+    - defold-zzfx         — thejustinwalsh, https://github.com/thejustinwalsh/defold-zzfx
+    - boom                — Britzl, https://github.com/britzl/boom
+    - bzAnim              — jbp4444, https://github.com/jbp4444/bzAnim
+    - library-defold-rendy — whiteboxdev, https://github.com/whiteboxdev/library-defold-rendy
+
+Each library folder under `data/<version>/` holds, for a library the CLI prints
+declarations for, the upstream sources pinned to one ref under `source/` or a
+hand-written declaration fork under `fork/`. Its `library.json` names its
+upstream repository and its license, and its `reviewed.json` the pinned ref.
+
+Each upstream library is distributed under its own license by its original
+author. The ts-defold/library MIT license covers the TypeScript definition
+packaging that those forks are derived from.
