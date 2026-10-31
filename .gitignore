@@ -1,0 +1,4 @@
+docs/prd/
+docs/impl/
+docs/step-pipeline.md
+.claude/settings.local.json
