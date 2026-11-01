@@ -16,6 +16,7 @@ const SCRIPT = "<script>alert(1)</script>";
 const IMG = "<img src=x onerror=alert(1)>";
 const LINK = "[x](javascript:alert(1))";
 const PAYLOAD = `${SCRIPT} ${IMG} ${LINK}`;
+const BAD_PORTAL_ID = `x) ${IMG}`;
 
 function dataDirs(): LibraryDirs {
   const root = mkdtempSync(join(tmpdir(), "upstream-text-"));
@@ -118,6 +119,57 @@ function writeListing(dirs: LibraryDirs, repoUrl: string, ships: string): void {
       ships,
       "",
     ].join("\n"),
+  );
+}
+
+function writePortalLibrary(dirs: LibraryDirs, id: string): void {
+  const docDir = join(dirs.dataDir, "asset-portal-script-api", "api-doc");
+  mkdirSync(docDir, { recursive: true });
+  writeFileSync(
+    join(docDir, "demo.json"),
+    JSON.stringify({ info: { namespace: "demo", brief: "", description: "" }, elements: [] }),
+  );
+  writeFileSync(
+    join(dirs.dataDir, "asset-portal-script-api.json"),
+    JSON.stringify({
+      libraries: [
+        {
+          id,
+          repo: "https://github.com/someone/demo",
+          ref: "1.0.0",
+          refKind: "tag",
+          license: "MIT",
+          description: "A demo.",
+          docs: [{ path: "api/demo.script_api", namespace: "demo", page: "demo" }],
+        },
+      ],
+    }),
+  );
+}
+
+async function renderPortalPage(id: string): Promise<string> {
+  const dirs = dataDirs();
+  writePortalLibrary(dirs, id);
+  const [source] = loadLibraryPageSources(dirs);
+  if (!source) throw new Error("no page");
+  return renderMarkdown(apiPageMarkdown(source.page, apiLinkify([source.page])));
+}
+
+function writePortalListing(dirs: LibraryDirs, id: string, description: string): void {
+  writeFileSync(
+    join(dirs.dataDir, "asset-portal.json"),
+    JSON.stringify({
+      entries: [
+        {
+          id,
+          description,
+          repo: "https://github.com/someone/demo",
+          ref: "1.0.0",
+          refKind: "tag",
+          kind: "no-lua-api",
+        },
+      ],
+    }),
   );
 }
 
@@ -232,21 +284,7 @@ describe("upstream listing text", () => {
 
   test("a portal description holding a payload stays inert", async () => {
     const dirs = dataDirs();
-    writeFileSync(
-      join(dirs.dataDir, "asset-portal.json"),
-      JSON.stringify({
-        entries: [
-          {
-            id: "evil",
-            description: PAYLOAD,
-            repo: "https://github.com/someone/evil",
-            ref: "1.0.0",
-            refKind: "tag",
-            kind: "no-lua-api",
-          },
-        ],
-      }),
-    );
+    writePortalListing(dirs, "evil", PAYLOAD);
     const [listing] = portalListingsFromManifest(dirs);
     if (!listing) throw new Error("no listing");
     expectInert(await renderMarkdown(listingPageMarkdown(listing)));
@@ -315,6 +353,34 @@ describe("upstream listing text", () => {
       }),
     );
     expect(() => loadLibraryPageSources(dirs)).toThrow(/\.\.\/\.\.\/secret/);
+  });
+});
+
+describe("an Asset Portal ID", () => {
+  const validLink = /Asset Portal: <a href="https:\/\/defold\.com\/assets\/good-id\/"/;
+
+  test("a malformed ID on a script-API library rejects the page, naming the ID", async () => {
+    await expect(renderPortalPage(BAD_PORTAL_ID)).rejects.toThrow(BAD_PORTAL_ID);
+  });
+
+  test("a valid ID on a script-API library links to its portal entry", async () => {
+    const html = await renderPortalPage("good-id");
+    expect(html).toMatch(validLink);
+    expectInert(html);
+  });
+
+  test("a malformed ID on a listing makes the loader throw, naming the ID", () => {
+    const dirs = dataDirs();
+    writePortalListing(dirs, BAD_PORTAL_ID, "A demo.");
+    expect(() => portalListingsFromManifest(dirs)).toThrow(BAD_PORTAL_ID);
+  });
+
+  test("a valid ID on a listing links to its portal entry", async () => {
+    const dirs = dataDirs();
+    writePortalListing(dirs, "good-id", "A demo.");
+    const [listing] = portalListingsFromManifest(dirs);
+    if (!listing) throw new Error("no listing");
+    expect(await renderMarkdown(listingPageMarkdown(listing))).toMatch(validLink);
   });
 });
 
