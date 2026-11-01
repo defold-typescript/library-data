@@ -121,8 +121,12 @@ function toNavGroup(label: string, children: NavLink[]): NavLink {
   return { label, labelHtml: renderNavLabel(label), children };
 }
 
-// The site's one category: every library, owner first. Official owners lead.
-export function buildNav(libraries: LibraryOwnerGroup[]): NavCategory[] {
+// The site's one category: the guides, then every library, owner first. Official
+// owners lead.
+export function buildNav(
+  libraries: LibraryOwnerGroup[],
+  guides: { title: string; route: string }[],
+): NavCategory[] {
   const libraryLinks = libraries.map((owner) => {
     const group = toNavGroup(
       owner.label,
@@ -160,7 +164,11 @@ export function buildNav(libraries: LibraryOwnerGroup[]): NavCategory[] {
       labelHtml: `${group.labelHtml} <span class="${OFFICIAL_NOTE_CLASS}">${OFFICIAL_NOTE}</span>`,
     };
   });
-  return [{ id: "libraries", label: "Libraries", route: "/", links: libraryLinks }];
+  const guideGroup = toNavGroup(
+    "Guides",
+    guides.map(({ title, route }) => toNavLink(title, route)),
+  );
+  return [{ id: "libraries", label: "Libraries", route: "/", links: [guideGroup, ...libraryLinks] }];
 }
 
 /** A library page projected to what the nav model needs: its route and dotted namespace. */

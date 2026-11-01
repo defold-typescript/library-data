@@ -2,8 +2,10 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { apiPages, siteDirs, untypedListings } from "../app/lib/api-content";
 import type { LibraryDirs } from "../app/lib/api-surface-loader";
+import { guides } from "../app/lib/guides";
 import {
   apiSearchRecords,
+  guideSearchRecords,
   listingSearchRecords,
   type SearchRecord,
 } from "../app/lib/search-index";
@@ -18,13 +20,17 @@ export interface SearchIndexOutput {
   records: SearchRecord[];
 }
 
-// Library pages and listings only: the link-only toolchain pages stay out, since
-// they are served by the toolchain docs and its own search.
+// Library pages, listings and guides only: the link-only toolchain pages stay out,
+// since they are served by the toolchain docs and its own search.
 export function searchIndexOutputs(dirs: LibraryDirs = siteDirs()): SearchIndexOutput[] {
   return [
     {
       file: "search-index.json",
-      records: [...apiSearchRecords(apiPages(dirs)), ...listingSearchRecords(untypedListings(dirs))],
+      records: [
+        ...apiSearchRecords(apiPages(dirs)),
+        ...listingSearchRecords(untypedListings(dirs)),
+        ...guideSearchRecords(guides()),
+      ],
     },
   ];
 }
