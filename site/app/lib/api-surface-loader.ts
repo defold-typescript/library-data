@@ -142,6 +142,7 @@ function portalScriptApiDocs(
 }
 
 function portalEntryUrl(id: string): string {
+  assertPageKey(id, "Asset Portal entry");
   return `https://defold.com/assets/${id}/`;
 }
 
@@ -481,7 +482,6 @@ export function portalListingsFromManifest(dirs: LibraryDirs): LibraryListing[] 
     if (entry.kind !== "no-lua-api" || !entry.repo || !entry.ref || !entry.refKind) return [];
     assertHttpsUrl(entry.repo, `asset-portal.json: entry "${entry.id}"`);
     assertUrlPart(entry.ref, `asset-portal.json: entry "${entry.id}" ref`);
-    assertPageKey(entry.id, "asset-portal.json: entry");
     const owner = githubOwner(entry.repo);
     const repo = githubRepo(entry.repo);
     if (owner === "" || repo === "" || listed.has(repoKey(owner, repo))) return [];
