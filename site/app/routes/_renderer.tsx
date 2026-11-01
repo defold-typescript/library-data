@@ -14,6 +14,7 @@ import UiTooltip from "../islands/ui-tooltip";
 import { apiPages, libraryNavGroups } from "../lib/api-content";
 import { withBase } from "../lib/base";
 import { faviconLinks } from "../lib/favicon";
+import { guides } from "../lib/guides";
 import type { Heading } from "../lib/headings";
 import { buildNav, type NavCategory } from "../lib/nav";
 import { buildPager, type Pager as PagerData, type PagerLink } from "../lib/pager";
@@ -196,7 +197,7 @@ interface RendererProps {
 
 export default jsxRenderer(({ children, title, headings, contentClass }: RendererProps, c) => {
   const path = c.req.path;
-  const nav = buildNav(libraryNavGroups(apiPages()));
+  const nav = buildNav(libraryNavGroups(apiPages()), guides());
   const activeCategory = nav[0];
   const tocHeadings = headings ?? [];
   const showToc = tocHeadings.length > 0;
