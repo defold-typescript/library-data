@@ -1,0 +1,61 @@
+name: Library docs
+
+# Builds site/ on every pull request and publishes it to GitHub Pages on every
+# merge to main. The site is served from the project subpath
+# https://<owner>.github.io/<repo>/, so DOCS_BASE is set to `/<repo>/`;
+# app/lib/base.ts threads it through every asset and link.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4"
+      - run: bun install --cwd site --frozen-lockfile
+      - run: bun run --cwd site build-model
+      - run: bun run --cwd site test
+      - name: Build docs site for the project Pages subpath
+        run: bun run --cwd site build:site
+        env:
+          DOCS_BASE: /library-data/
+      # Served straight by deploy-pages (no Jekyll pass), but the marker keeps a
+      # future branch-based deploy from running Jekyll over the asset tree.
+      - run: touch site/dist/.nojekyll
+      # include-hidden-files keeps the `.nojekyll` marker above in the artifact:
+      # upload-pages-artifact drops dotfiles by default from v4 on.
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/dist
+          include-hidden-files: true
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    # Only this job can deploy, so code from a pull request never holds the token.
+    permissions:
+      pages: write
+      id-token: write
+    # A newer merge replaces an older deploy; a pull request build never cancels one.
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v6
+      - id: deployment
+        uses: actions/deploy-pages@v5
