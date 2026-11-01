@@ -2,6 +2,7 @@ import githubIconRaw from "@phosphor-icons/core/duotone/github-logo-duotone.svg?
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Script } from "honox/server";
 import { SidebarItems } from "../components/sidebar";
+import { ToolchainLink } from "../components/toolchain-link";
 import { FONT_TOKENS, PRELOAD_FONT_FILES } from "../generated/fonts";
 import CodeCopy from "../islands/code-copy";
 import Search from "../islands/search";
@@ -18,7 +19,6 @@ import { guides } from "../lib/guides";
 import type { Heading } from "../lib/headings";
 import { buildNav, type NavCategory } from "../lib/nav";
 import { buildPager, type Pager as PagerData, type PagerLink } from "../lib/pager";
-import { TOOLCHAIN_DOCS_URL } from "../lib/toolchain-links";
 
 declare module "hono" {
   // Must stay an interface: module augmentation merges into hono's ContextRenderer.
@@ -271,12 +271,7 @@ export default jsxRenderer(({ children, title, headings, contentClass }: Rendere
             </a>
             <div class="ml-auto flex items-center gap-2">
               <Search />
-              <a
-                href={TOOLCHAIN_DOCS_URL}
-                class="px-3 text-[length:var(--nav-top-size)] text-text-muted transition hover:text-text"
-              >
-                Toolchain docs
-              </a>
+              <ToolchainLink />
               <GithubLink />
               <ThemeToggle />
             </div>
