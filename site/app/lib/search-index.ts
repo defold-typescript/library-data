@@ -1,4 +1,5 @@
 import { type ApiPage, apiModuleSections, qualify } from "./api-surface";
+import type { Guide } from "./guides";
 import type { LibraryListing } from "./nav";
 import { memberAnchors } from "./symbol-index";
 
@@ -86,6 +87,15 @@ export function apiSearchRecords(pages: ApiPage[]): SearchRecord[] {
       );
     })
     .sort((a, b) => a.route.localeCompare(b.route));
+}
+
+/** One record per guide, holding its prose. */
+export function guideSearchRecords(guides: Guide[]): SearchRecord[] {
+  return guides.map(({ route, title, markdown }) => ({
+    route,
+    title,
+    text: toPlainText(markdown),
+  }));
 }
 
 /** One record per untyped library listing, holding what its page tells a reader. */

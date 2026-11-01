@@ -73,10 +73,10 @@ const HEADING_ANCHOR_CLOSE = `${HEADING_ANCHOR_ICON}</a>`;
 const EXTERNAL_LINK_ICON = phosphorDuotone("arrow-square-out", "external-icon");
 
 // Guide pages cross-link with relative `.md` paths (`./foo.md`, `foo.md#anchor`),
-// but the site routes each file at its slug (`README.md` -> `/`, `foo.md` -> `/foo`),
-// so the raw hrefs would 404. Rewrite local `.md` links to their route; leave
-// external URLs, root-absolute paths, and bare fragments untouched.
-function rewriteGuideHref(href: string): string {
+// but the site routes each file at its slug under `prefix` (`README.md` -> `/`,
+// `foo.md` -> `<prefix>/foo`), so the raw hrefs would 404. Rewrite local `.md` links
+// to their route; leave external URLs, root-absolute paths, and bare fragments untouched.
+function rewriteGuideHref(href: string, prefix: string): string {
   if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith("/") || href.startsWith("#")) {
     return href;
   }
@@ -84,7 +84,7 @@ function rewriteGuideHref(href: string): string {
   if (!path?.endsWith(".md")) return href;
   const fragment = fragmentParts.length > 0 ? `#${fragmentParts.join("#")}` : "";
   const name = path.replace(/.*\//, "").replace(/\.md$/, "");
-  return `${name === "README" ? "/" : `/${name}`}${fragment}`;
+  return `${name === "README" ? "/" : `${prefix}/${name}`}${fragment}`;
 }
 
 // Prepend the deploy base to an in-site root-absolute URL (`/api` -> `/toolchain/api`)
@@ -331,6 +331,8 @@ export async function renderMarkdown(
     readInlineSvg?: (src: string) => string | undefined;
     /** Symbol key -> root-absolute `/api` route an inline code span naming it links to. */
     symbolCodeLinks?: ReadonlyMap<string, string>;
+    /** The route a relative `.md` link's slug sits under. */
+    guideRoutePrefix?: string;
   } = {},
 ): Promise<string> {
   const source = opts.firstHeading ? replaceFirstHeading(markdown, opts.firstHeading) : markdown;
@@ -511,7 +513,9 @@ export async function renderMarkdown(
           const href = child.attrGet("href");
           const isBadge = children[i + 1]?.type === "image";
           const isExternal = href != null && /^https?:\/\//i.test(href);
-          if (href) child.attrSet("href", withDeployBase(rewriteGuideHref(href)));
+          if (href) {
+            child.attrSet("href", withDeployBase(rewriteGuideHref(href, opts.guideRoutePrefix ?? "")));
+          }
           // A link wrapping an image is a badge/icon, not a prose link — tag it
           // so the stylesheet can drop the `.prose a` underline without a
           // parent-selector (`:has`) the build pipeline may not preserve.
