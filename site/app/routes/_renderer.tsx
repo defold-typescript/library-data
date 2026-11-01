@@ -4,8 +4,10 @@ import { Script } from "honox/server";
 import { SidebarItems } from "../components/sidebar";
 import { FONT_TOKENS, PRELOAD_FONT_FILES } from "../generated/fonts";
 import CodeCopy from "../islands/code-copy";
+import Search from "../islands/search";
 import SidebarToggle from "../islands/sidebar-toggle";
 import SidebarTooltip from "../islands/sidebar-tooltip";
+import SymbolTooltip from "../islands/symbol-tooltip";
 import ThemeToggle from "../islands/theme-toggle";
 import Toc from "../islands/toc";
 import UiTooltip from "../islands/ui-tooltip";
@@ -267,6 +269,7 @@ export default jsxRenderer(({ children, title, headings, contentClass }: Rendere
               </span>
             </a>
             <div class="ml-auto flex items-center gap-2">
+              <Search />
               <a
                 href={TOOLCHAIN_DOCS_URL}
                 class="px-3 text-[length:var(--nav-top-size)] text-text-muted transition hover:text-text"
@@ -309,6 +312,7 @@ export default jsxRenderer(({ children, title, headings, contentClass }: Rendere
           </main>
         </div>
         <UiTooltip />
+        <SymbolTooltip />
         <CodeCopy />
         <script dangerouslySetInnerHTML={{ __html: SIDEBAR_SCROLL_INIT }} />
         <script dangerouslySetInnerHTML={{ __html: TOPBAR_HEIGHT_INIT }} />

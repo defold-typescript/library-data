@@ -7,8 +7,9 @@
   "type": "module",
   "scripts": {
     "build-model": "bun scripts/build-model.ts",
-    "build:site": "bun scripts/build-model.ts && vite build --mode client && vite build",
-    "dev": "bun scripts/build-model.ts && vite",
+    "build-indexes": "bun scripts/build-search-index.ts && bun scripts/build-symbol-index.ts",
+    "build:site": "bun scripts/build-model.ts && bun run build-indexes && vite build --mode client && vite build",
+    "dev": "bun scripts/build-model.ts && bun run build-indexes && vite",
     "test": "bun test --timeout 30000",
     "typecheck": "tsc --noEmit"
   },
@@ -17,6 +18,7 @@
     "@fontsource-variable/spline-sans-mono": "^5.3.0",
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/ubuntu": "^5.3.0",
+    "@orama/orama": "^3.1.18",
     "@phosphor-icons/core": "^2.1.1",
     "@shikijs/markdown-it": "4.4.2",
     "@shikijs/transformers": "4.4.2",
