@@ -1,7 +1,6 @@
 {
   "repo": "https://github.com/Insality/defold-proto",
   "license": "MIT",
-  "floors": {
-    "proto.proto": 0.134
-  }
+  "refKind": "tag",
+  "floors": { "proto.proto": 1 }
 }
