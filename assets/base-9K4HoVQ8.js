@@ -1,0 +1,1 @@
+var e=`/library-data/`.replace(/\/$/,``);function t(t){return/^[a-z][a-z0-9+.-]*:/i.test(t)?t:`${e}${t.startsWith(`/`)?t:`/${t}`}`}export{t};

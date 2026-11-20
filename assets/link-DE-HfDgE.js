@@ -1,0 +1,1 @@
+import{r as e}from"./framework-Gkie6jR5.js";import{s as t}from"./index-CGVPYJHZ.js";var n=t();function r({ref:t,href:r=`#`,external:i=!!(r.match(/^\w+:/)||r.startsWith(`//`)),prefetch:a,children:o,...s}){return i?(0,n.jsx)(`a`,{ref:t,href:r,rel:`noreferrer noopener`,target:`_blank`,...s,children:o}):(0,n.jsx)(e,{ref:t,href:r,prefetch:a,...s,children:o})}export{r as t};
